@@ -168,13 +168,14 @@ const SettingsTab: FC<Props> = (props) => {
           </Tooltip>
         </Row>
         <Row align="middle" gutter={10}>
-          <Col span={24}>
+          <Col span={24} style={{ paddingRight: 10 }}>
             <Slider
               min={0}
-              max={10}
+              max={20}
               onChange={setContextCount}
               onChangeComplete={onContextCountChange}
               value={typeof contextCount === 'number' ? contextCount : 0}
+              marks={{ 0: '0', 5: '5', 10: '10', 15: '15', 20: t('chat.settings.max') }}
               step={1}
             />
           </Col>
