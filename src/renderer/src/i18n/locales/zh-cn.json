@@ -654,6 +654,7 @@
         "obsidian.vault_name_placeholder": "请输入 Obsidian 仓库名称",
         "obsidian.path_name": "存储路径",
         "obsidian.path_name_placeholder": "请输入存储路径(末尾不要加 /)",
+        "obsidian.silent_mode": "静默模式",
         "title": "数据设置",
         "webdav": {
           "autoSync": "自动备份",

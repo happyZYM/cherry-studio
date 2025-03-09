@@ -74,6 +74,7 @@ export interface SettingsState {
   notionPageNameKey: string | null
   obsidianVaultName: string | null
   obsidianPathName: string | null
+  obsidianSilentMode: boolean
   thoughtAutoCollapse: boolean
   notionAutoSplit: boolean
   notionSplitSize: number
@@ -140,6 +141,7 @@ const initialState: SettingsState = {
   notionPageNameKey: 'Name',
   obsidianVaultName: '',
   obsidianPathName: '',
+  obsidianSilentMode: false,
   thoughtAutoCollapse: true,
   notionAutoSplit: false,
   notionSplitSize: 90,
@@ -320,6 +322,9 @@ const settingsSlice = createSlice({
     setobsidianPathName: (state, action: PayloadAction<string>) => {
       state.obsidianPathName = action.payload
     },
+    setobsidianSilentMode: (state, action: PayloadAction<boolean>) => {
+      state.obsidianSilentMode = action.payload
+    },
     setThoughtAutoCollapse: (state, action: PayloadAction<boolean>) => {
       state.thoughtAutoCollapse = action.payload
     },
@@ -396,6 +401,7 @@ export const {
   setNotionPageNameKey,
   setobsidianVaultName,
   setobsidianPathName,
+  setobsidianSilentMode,
   setThoughtAutoCollapse,
   setNotionAutoSplit,
   setNotionSplitSize,

@@ -15,6 +15,7 @@ import {
   setNotionPageNameKey,
   setNotionSplitSize,
   setobsidianPathName,
+  setobsidianSilentMode,
   setobsidianVaultName,
   setYuqueRepoId,
   setYuqueToken,
@@ -205,6 +206,7 @@ const ObsidianSettings: FC = () => {
 
   const obsidianVaultName = useSelector((state: RootState) => state.settings.obsidianVaultName)
   const obsidianPathName = useSelector((state: RootState) => state.settings.obsidianPathName)
+  const obsidianSilentMode = useSelector((state: RootState) => state.settings.obsidianSilentMode)
 
   const handleObsidianVaultNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setobsidianVaultName(e.target.value))
@@ -212,6 +214,10 @@ const ObsidianSettings: FC = () => {
 
   const handleObsidianPathNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setobsidianPathName(e.target.value))
+  }
+
+  const handleObsidianSilentModeChange = (checked: boolean) => {
+    dispatch(setobsidianSilentMode(checked))
   }
 
   return (
@@ -242,6 +248,11 @@ const ObsidianSettings: FC = () => {
             placeholder={t('settings.data.obsidian.path_name_placeholder')}
           />
         </HStack>
+      </SettingRow>
+      <SettingDivider />
+      <SettingRow>
+        <SettingRowTitle>{t('settings.data.obsidian.silent_mode')}</SettingRowTitle>
+        <Switch checked={obsidianSilentMode} onChange={handleObsidianSilentModeChange} />
       </SettingRow>
     </SettingGroup>
   )

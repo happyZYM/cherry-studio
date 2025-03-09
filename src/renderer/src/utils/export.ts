@@ -299,7 +299,7 @@ export const exportMarkdownToObsidian = async (title: string, content: string) =
 
   setExportState({ isExporting: true })
 
-  const { obsidianVaultName, obsidianPathName } = store.getState().settings
+  const { obsidianVaultName, obsidianPathName, obsidianSilentMode } = store.getState().settings
 
   if (!obsidianVaultName || !obsidianPathName) {
     window.message.error({ content: i18n.t('message.error.obsidian.no_config'), key: 'obsidian-no-config' })
@@ -315,7 +315,11 @@ export const exportMarkdownToObsidian = async (title: string, content: string) =
     const encodedVaultName = encodeURIComponent(obsidianVaultName)
     const encodedFullPath = encodeURIComponent(fullPath)
     // obsidian://new?vault={VaultName}&file={Path}/{Name}&clipboard
-    const url = `obsidian://new?vault=${encodedVaultName}&file=${encodedFullPath}&clipboard`
+    // if obsidianSilentMode is on, add `&silent` to the url
+    let url = `obsidian://new?vault=${encodedVaultName}&file=${encodedFullPath}&clipboard`
+    if (obsidianSilentMode) {
+      url += '&silent'
+    }
     // 将 content 复制到剪贴板
     navigator.clipboard.writeText(content)
     // 打开 Obsidian
