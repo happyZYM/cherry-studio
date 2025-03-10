@@ -5,6 +5,7 @@ import { getMessageTitle } from '@renderer/services/MessagesService'
 import store from '@renderer/store'
 import { setExportState } from '@renderer/store/runtime'
 import { Message, Topic } from '@renderer/types'
+import dayjs from 'dayjs'
 
 export const messageToMarkdown = (message: Message) => {
   const roleText = message.role === 'user' ? '🧑‍💻 User' : '🤖 Assistant'
@@ -307,10 +308,7 @@ export const exportMarkdownToObsidian = async (title: string, content: string) =
   }
 
   try {
-    // 获取 yyyy-mm-dd-hhmmss 格式的时间戳，位数不足时补0
-    const date = new Date()
-    const padZero = (num: number) => num.toString().padStart(2, '0')
-    const timestamp = `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(date.getDate())}-${padZero(date.getHours())}${padZero(date.getMinutes())}${padZero(date.getSeconds())}`
+    const timestamp = dayjs().format('YYYY-MM-DD-HH-mm-ss')
     const fileName = `${title} ${timestamp}.md`
     const fullPath = `${obsidianPathName}/${fileName}`
     const encodedVaultName = encodeURIComponent(obsidianVaultName)
