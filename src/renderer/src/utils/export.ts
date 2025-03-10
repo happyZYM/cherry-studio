@@ -6,6 +6,7 @@ import store from '@renderer/store'
 import { setExportState } from '@renderer/store/runtime'
 import { Message, Topic } from '@renderer/types'
 import { removeSpecialCharactersForFileName } from '@renderer/utils/index'
+import dayjs from 'dayjs'
 
 export const messageToMarkdown = (message: Message) => {
   const roleText = message.role === 'user' ? '🧑‍💻 User' : '🤖 Assistant'
@@ -31,15 +32,31 @@ export const topicToMarkdown = async (topic: Topic) => {
 }
 
 export const exportTopicAsMarkdown = async (topic: Topic) => {
-  const fileName = removeSpecialCharactersForFileName(topic.name) + '.md'
-  const markdown = await topicToMarkdown(topic)
-  window.api.file.save(fileName, markdown)
+  const { markdownExportPath } = store.getState().settings
+  if (!markdownExportPath) {
+    const fileName = removeSpecialCharactersForFileName(topic.name) + '.md'
+    const markdown = await topicToMarkdown(topic)
+    window.api.file.save(fileName, markdown)
+  } else {
+    const timestamp = dayjs().format('YYYY-MM-DD-HH-mm-ss')
+    const fileName = removeSpecialCharactersForFileName(topic.name) + ` ${timestamp}.md`
+    const markdown = await topicToMarkdown(topic)
+    window.api.file.write(markdownExportPath + '/' + fileName, markdown)
+  }
 }
 
 export const exportMessageAsMarkdown = async (message: Message) => {
-  const fileName = getMessageTitle(message) + '.md'
-  const markdown = messageToMarkdown(message)
-  window.api.file.save(fileName, markdown)
+  const { markdownExportPath } = store.getState().settings
+  if (!markdownExportPath) {
+    const fileName = removeSpecialCharactersForFileName(getMessageTitle(message)) + '.md'
+    const markdown = messageToMarkdown(message)
+    window.api.file.save(fileName, markdown)
+  } else {
+    const timestamp = dayjs().format('YYYY-MM-DD-HH-mm-ss')
+    const fileName = removeSpecialCharactersForFileName(getMessageTitle(message)) + ` ${timestamp}.md`
+    const markdown = messageToMarkdown(message)
+    window.api.file.write(markdownExportPath + '/' + fileName, markdown)
+  }
 }
 
 // 修改 splitNotionBlocks 函数
