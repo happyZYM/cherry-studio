@@ -77,19 +77,19 @@ const MarkdownExportSettings: FC = () => {
             readOnly
             style={{ width: 250 }}
             placeholder={t('settings.data.markdown_export.path_placeholder')}
+            suffix={
+              markdownExportPath ? (
+                <DeleteOutlined onClick={handleClearPath} style={{ color: 'var(--color-error)', cursor: 'pointer' }} />
+              ) : null
+            }
           />
           <Button onClick={handleSelectFolder} icon={<FolderOpenOutlined />}>
             {t('settings.data.markdown_export.select')}
           </Button>
-          {markdownExportPath && (
-            <Button onClick={handleClearPath} icon={<DeleteOutlined />} danger>
-              {t('settings.data.markdown_export.clear')}
-            </Button>
-          )}
         </HStack>
       </SettingRow>
       <SettingRow>
-        <SettingHelpText style={{ marginLeft: 10 }}>{t('settings.data.markdown_export.help')}</SettingHelpText>
+        <SettingHelpText>{t('settings.data.markdown_export.help')}</SettingHelpText>
       </SettingRow>
     </SettingGroup>
   )
