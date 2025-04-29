@@ -27,7 +27,6 @@ const HomeWindow: FC = () => {
   const [clipboardText, setClipboardText] = useState('')
   const [selectedText, setSelectedText] = useState('')
   const [text, setText] = useState('')
-  const [lastClipboardText, setLastClipboardText] = useState<string | null>(null)
   const textChange = useState(() => {})[1]
   const { defaultAssistant } = useDefaultAssistant()
   const { defaultModel: model } = useDefaultModel()
@@ -43,12 +42,18 @@ const HomeWindow: FC = () => {
   const readClipboard = useCallback(async () => {
     if (!readClipboardAtStartup) return
 
-    const text = await navigator.clipboard.readText().catch(() => null)
-    if (text && text !== lastClipboardText) {
-      setLastClipboardText(text)
-      setClipboardText(text.trim())
+    try {
+      // 使用浏览器API读取剪贴板
+      const text = await navigator.clipboard.readText().catch(() => null)
+      if (text) {
+        setClipboardText(text.trim())
+        return true
+      }
+    } catch (error) {
+      console.error('Failed to read clipboard:', error)
     }
-  }, [readClipboardAtStartup, lastClipboardText])
+    return false
+  }, [readClipboardAtStartup])
 
   const focusInput = () => {
     if (inputBarRef.current) {
@@ -59,19 +64,58 @@ const HomeWindow: FC = () => {
     }
   }
 
-  const onWindowShow = useCallback(async () => {
+  const onWindowShow = useCallback(() => {
     featureMenusRef.current?.resetSelectedIndex()
-    readClipboard().then()
-    focusInput()
+
+    // 窗口显示后立即尝试读取一次
+    readClipboard().then((success) => {
+      // 如果首次读取失败，稍后再尝试
+      if (!success) {
+        setTimeout(() => {
+          readClipboard()
+        }, 200)
+      }
+    })
+
+    // 确保UI元素已经加载完毕
+    setTimeout(() => {
+      focusInput()
+    }, 100)
   }, [readClipboard])
 
+  // 组件挂载时读取剪贴板
   useEffect(() => {
-    readClipboard()
+    if (document.visibilityState === 'visible') {
+      readClipboard()
+    }
+
+    // 监听页面可见性变化
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        readClipboard()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
   }, [readClipboard])
 
   useEffect(() => {
     i18n.changeLanguage(language || navigator.language || defaultLanguage)
   }, [language])
+
+  // 监听readClipboardAtStartup设置变化
+  useEffect(() => {
+    // 设置改变时，主动刷新窗口状态
+    return () => {
+      // 当组件卸载时，确保下次打开能正确读取剪贴板
+      if (readClipboardAtStartup) {
+        window.api.miniWindow.close()
+      }
+    }
+  }, [readClipboardAtStartup])
 
   const onCloseWindow = () => window.api.miniWindow.hide()
 

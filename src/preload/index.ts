@@ -27,6 +27,9 @@ const api = {
     getDeviceType: () => ipcRenderer.invoke(IpcChannel.System_GetDeviceType),
     getHostname: () => ipcRenderer.invoke(IpcChannel.System_GetHostname)
   },
+  clipboard: {
+    readText: () => ipcRenderer.invoke(IpcChannel.Clipboard_ReadText)
+  },
   zip: {
     compress: (text: string) => ipcRenderer.invoke(IpcChannel.Zip_Compress, text),
     decompress: (text: Buffer) => ipcRenderer.invoke(IpcChannel.Zip_Decompress, text)
