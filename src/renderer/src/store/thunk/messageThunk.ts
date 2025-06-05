@@ -36,6 +36,7 @@ import {
 } from '@renderer/utils/messageUtils/create'
 import { getTopicQueue, waitForTopicQueue } from '@renderer/utils/queue'
 import { isOnHomePage } from '@renderer/utils/window'
+import Logger from 'electron-log'
 import { t } from 'i18next'
 import { throttle } from 'lodash'
 
@@ -510,6 +511,20 @@ const fetchAndProcessAssistantResponseImpl = async (
         // saveUpdatedBlockToDB(citationBlock.id, assistantMsgId, topicId, getState)
       },
       onLLMWebSearchComplete: async (llmWebSearchResult) => {
+        // 强制处理转圈问题：如果存在 UNKNOWN block，将其转换为 MAIN_TEXT
+        if (lastBlockId && lastBlockType === MessageBlockType.UNKNOWN) {
+          Logger.debug('Converting UNKNOWN block to MAIN_TEXT due to LLM web search complete:', lastBlockId)
+          const initialChanges: Partial<MessageBlock> = {
+            type: MessageBlockType.MAIN_TEXT,
+            content: accumulatedContent || '', // 使用已累积的内容，即使为空
+            status: MessageBlockStatus.STREAMING
+          }
+          mainTextBlockId = lastBlockId
+          lastBlockType = MessageBlockType.MAIN_TEXT
+          dispatch(updateOneBlock({ id: lastBlockId, changes: initialChanges }))
+          saveUpdatedBlockToDB(lastBlockId, assistantMsgId, topicId, getState)
+        }
+
         if (citationBlockId) {
           const changes: Partial<CitationMessageBlock> = {
             response: llmWebSearchResult,
