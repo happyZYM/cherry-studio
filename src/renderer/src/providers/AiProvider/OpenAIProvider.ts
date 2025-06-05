@@ -1,4 +1,5 @@
 import { DEFAULT_MAX_TOKENS } from '@renderer/config/constant'
+import Logger from '@renderer/config/logger'
 import {
   findTokenLimit,
   getOpenAIWebSearchParams,
@@ -65,7 +66,6 @@ import {
 import { findFileBlocks, findImageBlocks, getMainTextContent } from '@renderer/utils/messageUtils/find'
 import { buildSystemPrompt } from '@renderer/utils/prompt'
 import { asyncGeneratorToReadableStream, readableStreamAsyncIterable } from '@renderer/utils/stream'
-import Logger from 'electron-log'
 import { isEmpty, takeRight } from 'lodash'
 import OpenAI, { AzureOpenAI } from 'openai'
 import {

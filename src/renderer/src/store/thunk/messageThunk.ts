@@ -1,3 +1,4 @@
+import Logger from '@renderer/config/logger'
 import db from '@renderer/databases'
 import { autoRenameTopic } from '@renderer/hooks/useTopic'
 import { fetchChatCompletion } from '@renderer/services/ApiService'
@@ -36,7 +37,6 @@ import {
 } from '@renderer/utils/messageUtils/create'
 import { getTopicQueue, waitForTopicQueue } from '@renderer/utils/queue'
 import { isOnHomePage } from '@renderer/utils/window'
-import Logger from 'electron-log'
 import { t } from 'i18next'
 import { throttle } from 'lodash'
 
