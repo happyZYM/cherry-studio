@@ -85,6 +85,7 @@ export type OpenAIStreamChunk =
   | { type: 'reasoning' | 'text-delta'; textDelta: string; chunk?: any }
   | { type: 'tool-calls'; delta: any; chunk?: any }
   | { type: 'finish'; finishReason: any; usage: any; delta: any; chunk: any }
+  | { type: 'citation'; chunk: any }
   | { type: 'unknown'; chunk: any }
 
 export default class OpenAIProvider extends BaseOpenAIProvider {
@@ -667,6 +668,11 @@ export default class OpenAIProvider extends BaseOpenAIProvider {
               yield { type: 'tool-calls', delta: delta, chunk }
             }
 
+            // 检查 citations 信息，无论是否有 content
+            if (chunk.citations || delta?.annotations) {
+              yield { type: 'citation', chunk }
+            }
+
             const finishReason = chunk?.choices[0]?.finish_reason
             if (!isEmpty(finishReason)) {
               yield { type: 'finish', finishReason, usage: chunk.usage, delta, chunk }
@@ -792,6 +798,38 @@ export default class OpenAIProvider extends BaseOpenAIProvider {
                 toolCalls[index].function.arguments += fun.arguments
               }
             })
+            break
+          }
+          case 'citation': {
+            // 处理独立的 citation chunk
+            const originalChunk = chunk.chunk
+            const originalDelta = originalChunk?.choices?.[0]?.delta
+
+            // Check for standard OpenAI annotations first (highest priority)
+            if (originalDelta?.annotations && originalDelta.annotations.length > 0) {
+              Logger.debug('Found OpenAI annotations in citation chunk!', { count: originalDelta.annotations.length })
+              onChunk({
+                type: ChunkType.LLM_WEB_SEARCH_COMPLETE,
+                llm_web_search: {
+                  results: originalDelta.annotations,
+                  source: WebSearchSource.OPENAI
+                }
+              } as LLMWebSearchCompleteChunk)
+            }
+            // Only check for OpenRouter/Perplexity citations if no OpenAI annotations were found
+            else if (originalChunk?.citations && originalChunk.citations.length > 0) {
+              Logger.debug('Found OpenRouter/Perplexity citations in citation chunk!', originalChunk.citations)
+              // 根据模型提供者设置正确的 source
+              const source =
+                assistant.model?.provider === 'perplexity' ? WebSearchSource.PERPLEXITY : WebSearchSource.OPENAI
+              onChunk({
+                type: ChunkType.LLM_WEB_SEARCH_COMPLETE,
+                llm_web_search: {
+                  results: originalChunk.citations,
+                  source: source
+                }
+              } as LLMWebSearchCompleteChunk)
+            }
             break
           }
           case 'finish': {
