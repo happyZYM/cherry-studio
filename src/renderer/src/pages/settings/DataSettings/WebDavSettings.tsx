@@ -9,14 +9,14 @@ import { startAutoSync, stopAutoSync } from '@renderer/services/BackupService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import {
   setWebdavAutoSync,
+  setWebdavDisableStream as _setWebdavDisableStream,
   setWebdavHost as _setWebdavHost,
   setWebdavMaxBackups as _setWebdavMaxBackups,
   setWebdavPass as _setWebdavPass,
   setWebdavPath as _setWebdavPath,
   setWebdavSkipBackupFile as _setWebdavSkipBackupFile,
   setWebdavSyncInterval as _setWebdavSyncInterval,
-  setWebdavUser as _setWebdavUser,
-  setWebdavDisableStream as _setWebdavDisableStream
+  setWebdavUser as _setWebdavUser
 } from '@renderer/store/settings'
 import { Button, Input, Switch, Tooltip } from 'antd'
 import dayjs from 'dayjs'
