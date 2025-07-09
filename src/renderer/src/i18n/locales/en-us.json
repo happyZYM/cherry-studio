@@ -1284,7 +1284,11 @@
           "syncStatus": "Backup Status",
           "title": "WebDAV",
           "user": "WebDAV User",
-          "maxBackups": "Maximum Backups"
+          "maxBackups": "Maximum Backups",
+          "disableStream": {
+            "title": "Disable Stream Upload",
+            "help": "When enabled, loads the file into memory before uploading. This can solve incompatibility issues with some WebDAV servers that do not support chunked uploads, but it will increase memory usage."
+          }
         },
         "local": {
           "autoSync": "Auto Backup",
