@@ -62,10 +62,10 @@ const WebDavSettings: FC = () => {
     dispatch(_setWebdavSyncInterval(value))
     if (value === 0) {
       dispatch(setWebdavAutoSync(false))
-      stopAutoSync()
+      stopAutoSync('webdav')
     } else {
       dispatch(setWebdavAutoSync(true))
-      startAutoSync()
+      startAutoSync(false, 'webdav')
     }
   }
 
