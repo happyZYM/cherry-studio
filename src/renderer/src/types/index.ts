@@ -788,7 +788,6 @@ export type S3Config = {
   autoSync: boolean
   syncInterval: number
   maxBackups: number
-  s3Enabled?: boolean
 }
 
 export type { Message } from './newMessage'
