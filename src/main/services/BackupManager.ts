@@ -341,7 +341,7 @@ class BackupManager {
       return result
     } catch (error) {
       // 上传失败时也删除本地临时文件
-      await fs.remove(backupedFilePath)
+      await fs.remove(backupedFilePath).catch(() => {})
       throw error
     }
   }
